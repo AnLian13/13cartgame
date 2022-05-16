@@ -5,19 +5,85 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>13 карт игра</title>
-    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      * {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+  display: flex;
+  background: #060AB2;
+}
+
+.memory-game {
+  width: 1680px;
+  height: 1640px;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  perspective: 1000px;
+}
+
+.memory-card {
+  width: calc(25% - 10px);
+  height: calc(33.333% - 10px);
+  margin: 5px;
+  position: relative;
+  box-shadow: 1px 1px 1px rgba(0,0,0,.3);
+  transition: all .5s;
+  transform-style: preserve-3d;
+  transform: scale(1);
+}
+
+.memory-card.flip {
+  transform: rotateY(180deg);
+}
+
+.memory-card:active {
+  transform: scale(0.97);
+  transition: transform .2s;
+}
+
+.front-face,
+.back-face {
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  position: absolute;
+  backface-visibility: hidden;
+  border-radius: 5px;
+  background: #1C7CCC;
+}
+
+.front-face {
+  transform: rotateY(180deg);
+}
+
+@media screen and (max-width: 750px) and (max-height: 500px) {
+  .memory-game {
+    width: 100%;
+    height: 100%;
+  }
+
+  .memory-card {
+    width: calc(25% - 8px);
+    height: calc(33.333% - 8px);
+    margin: 4px;
+  }
+
+  .front-face,
+  .back-face {
+    padding: 10px;
+  }
+}
+    </style>
   </head>
   <body>
-    <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <meta charset="UTF-8" />
-
-        <title>Memory Game</title>
-
-        <link rel="stylesheet" href="style.css" />
-      </head>
-      <body>
         <section class="memory-game">
           <div class="memory-card" data-name="react">
             <img class="front-face" src="Куромаку.jpg" alt="study" />
@@ -127,7 +193,7 @@
             />
           </div>
           <div class="memory-card" data-name="aurelia">
-            <img class="front-face" src="Феликс.jpg" alt="Ambrella" />
+            <img class="front-face" src="Феликс.jpg" alt="happy" />
             <img
               class="back-face"
               src="лого.jpg"
@@ -136,7 +202,7 @@
           </div>
 
           <div class="memory-card" data-name="aurelia">
-            <img class="front-face" src="Феликс.jpg" alt="Ambrella" />
+            <img class="front-face" src="Феликс.jpg" alt="happy" />
             <img
               class="back-face"
               src="лого.jpg"
@@ -144,7 +210,7 @@
             />
           </div>
           <div class="memory-card" data-name="aurelia">
-            <img class="front-face" src="Габриэль.jpg" alt="Ambrella" />
+            <img class="front-face" src="Габриэль.jpg" alt="" />
             <img
               class="back-face"
               src="лого.jpg"
@@ -153,7 +219,7 @@
           </div>
 
           <div class="memory-card" data-name="aurelia">
-            <img class="front-face" src="Габриэль.jpg" alt="Ambrella" />
+            <img class="front-face" src="Габриэль.jpg" alt="" />
             <img
               class="back-face"
               src="лого.jpg"
@@ -161,8 +227,65 @@
             />
           </div>
         </section>
-        <script src="js/memory.js"></script>
+        <script>const cards = document.querySelectorAll('.memory-card');
+
+          let hasFlippedCard = false;
+          let lockBoard = false;
+          let firstCard, secondCard;
+          
+          function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+          
+            this.classList.add('flip');
+          
+            if (!hasFlippedCard) {
+              hasFlippedCard = true;
+              firstCard = this;
+              return;
+            }
+          
+            secondCard = this;
+            lockBoard = true;
+          
+            checkForMatch();
+          }
+          
+          function checkForMatch() {
+            let isMatch = firstCard.dataset.name === secondCard.dataset.name;
+            isMatch ? disableCards() : unflipCards();
+          }
+          
+          function disableCards() {
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+          
+            resetBoard();
+          }
+          
+          function unflipCards() {
+            setTimeout(() => {
+              firstCard.classList.remove('flip');
+              secondCard.classList.remove('flip');
+          
+              resetBoard();
+            }, 1500);
+          }
+          
+          function resetBoard() {
+            hasFlippedCard = false;
+            lockBoard = false;
+            firstCard = null;
+            secondCard = null;
+          }
+          
+          (function shuffle() {
+            cards.forEach(card => {
+              let ramdomPos = Math.ceil(Math.random() * 16);
+              card.style.order = ramdomPos;
+            });
+          })();
+          
+          cards.forEach(card => card.addEventListener('click', flipCard));</script>
       </body>
     </html>
-  </body>
-</html>
